@@ -1,0 +1,56 @@
+# MISRA C 2012 Suppressions Template
+# 借鉴 xwos/xwbs/misra-c2012-suppressions.txt 的工程实用主义做法
+# 本文件是模板, 项目按需复制到仓库根或代码子目录, 重命名为 .misra-suppressions 或工具识别的名字
+#
+# 格式 (空格或制表符分隔):
+#   <rule-id>  <reason-as-comment>  <file:line or pattern>
+#
+# 推荐工具识别 (按工具调整):
+#   - cppcheck: --suppressions-list
+#   - Coverity:   cov-configure.xml (不是本格式)
+#   - PC-lint / FlexeLint:  --suppress
+#   - IAR / Keil / GCC MISRA 检查插件: 各工具不同
+#
+# 用法:
+#   cppcheck --enable=all --suppressions-list=misra-suppressions.txt src/
+#   或对应工具的 suppress 参数
+#
+# 警告: 任何一项都是对规约的破例。提交前应:
+#   1. 评估是否真的无法规避 (例如硬件约束、性能硬指标)
+#   2. 在 code review 中明确说明理由
+#   3. 跟踪何时可以移除该 suppress (例如平台不再依赖)
+#
+# 规则列表 (c2012 子集,  按需增删):
+#   Rule 1.3  - 多重声明
+#   Rule 2.1  - 死代码
+#   Rule 5.x  - 标识符
+#   Rule 8.x  - 声明与定义
+#   Rule 9.x  - 初始化
+#   Rule 10.x - 必要的类型转换
+#   Rule 11.x - 指针类型转换
+#   Rule 14.x - 循环
+#   Rule 15.x - 控制流
+#   Rule 17.x - 跳转
+#   Rule 20.x - 预处理
+#
+# --------------------------------------------------------------------------
+# 模板条目 (按需取消注释 / 复制)
+# --------------------------------------------------------------------------
+#
+# c2012-2.1  /* startup code unreachable by design */                 startup.c:42
+# c2012-5.4  /* hardware register macro redefinition */              hal/regmap.h:15
+# c2012-8.7  /* API requires external linkage for dynamic loader */ include/plugin.h:23
+# c2012-9.1  /* zero-initialized buffer for DMA, value is irrelevant */ driver/dma.c:88
+# c2012-10.1 /-*/  /* bitwise on enum for state machine flags */        state.c:120
+# c2012-10.3 /-*/  /* narrow cast for hardware register width */       hal/reg.c:67
+# c2012-10.4 /-*/  /* signed/unsigned mismatch for FSM comparison */  state.c:140
+# c2012-11.1 /-*/  /* byte-to-int conversion for protocol parser */   protocol.c:55
+# c2012-11.4 /-*/  /* object pointer to integer for IPC handle */      ipc.c:30
+# c2012-14.3 /-*/  /* loop counter controlled by while-break */       parser.c:200
+# c2012-15.1 /-*/  /* goto for single function exit (cleanup pattern) */ resource.c:80
+# c2012-15.5 /-*/  /* multiple function exits justified by cleanup */  resource.c:90
+# c2012-17.1 /-*/  /* pointer arithmetic for ring buffer */             ringbuf.c:45
+# c2012-17.4 /-*/  /* array indexing for pointer arithmetic */         parser.c:170
+# c2012-20.1 /-*/  /* standard library include variation */             platform.h:10
+# c2012-20.4 /-*/  /* dynamic allocation in init-only path */         init.c:25
+

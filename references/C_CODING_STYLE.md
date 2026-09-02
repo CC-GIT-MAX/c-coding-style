@@ -545,3 +545,83 @@ static void AEC_InitOne(uint8_t id) {
 | 1.0.0 | 2026-08-31 | zhangsan | 初版发布;按用户原文要点整理,补全控制流、宏、关键字等基础项 |
 | 1.1.0 | 2026-08-31 | zhangsan | 参考项目内 `C_CODING_STYLE.md` 整合:新增基线 / 编译警告 / 文件编码 / 字面量后缀 / 类型转换 / 头文件禁止项 / 参数顺序与数量 / 圈复杂度与嵌套层数 / fall-through 与 no-op default / `for(;;)` 与 goto 标签命名 / `@param[in/out]` / 条件编译 / 内存与资源 / 并发与中断 / 错误处理 / 可移植性 / 构建与警告 / 版本控制 / MISRA 叠加 / 范围声明 |
 | 1.2.0 | 2026-08-31 | zhangsan | 按用户修订:9.4 函数长度与复杂度标注"建议不强制";10.1 if 改 Yoda 风格;15 章 ISR 措辞限定为"禁止在正式版软件 ISR 中调用";11 章注释规约指向外部 DOXYGEN_STYLE.md;删除 18/19/21 章(构建与警告 / 版本控制 / 不在本规约范围);新增第 12 章文件位置约定(.c/.h 符号顺序) |
+
+## 20. 违规 vs 正确对照表
+
+> 本章对应 multi-star-skill 的 P1 检查项 A-04 (含"违规示例 vs 正确示例"对照表)。代码 review 与新人培训时优先翻本章。
+> 章节引用规则编号与本文档各章对齐;具体细节请回到对应章节。
+
+### 命名约定 (5 章)
+
+| 规则 | 违规示例 | 正确示例 |
+|---|---|---|
+| 5.1 函数 PascalCase + 模块前缀 | `int getCount(void)` | `int Module_GetCount(void)` |
+| 5.1 类型 PascalCase + _t 后缀 | `typedef struct { int x; } point;` | `typedef struct { int x; } Point_t;` |
+| 5.1 宏 UPPER_SNAKE_CASE | `#define max_buf 256` | `#define MAX_BUF_SIZE  (256U)` |
+| 5.2 双下划线类型后缀 __t | `typedef void *handle;` | `typedef void *Eep__tHandle;` |
+| 5.2 双下划线数值类型 __n | `typedef uint16_t counter;` | `typedef uint16_t Eep__nJobCount;` |
+| 5.2 双下划线枚举类型 __en | `typedef enum { ... } state_e;` | `typedef enum { ... } Eep__tenStatus;` |
+
+### 控制流 (10 章)
+
+| 规则 | 违规示例 | 正确示例 |
+|---|---|---|
+| 10.1 if Yoda 风格 | `if (x == 0) { ... }` | `if (0U == x) { ... }` |
+| 10.1 if 单行也要 {} | `if (cond) do_it();` | `if (cond) { do_it(); }` |
+| 10.1 switch 必有 default | `switch (s) { case 1: ...; break; }` | `switch (s) { case 1: ...; break; default: /* no-op */ break; }` |
+| 10.1 case 必须 break / return | `switch (s) { case 1: foo(); case 2: bar(); }` | `switch (s) { case 1: foo(); break; case 2: bar(); break; default: break; }` |
+| 10.3 goto 单一出口 | `if (err) { free(a); return -1; } free(b); return 0;` | `if (err) { rc = -1; goto err_out; } ... err_out: free(b); free(a); return rc;` |
+
+### 头文件 (7 章)
+
+| 规则 | 违规示例 | 正确示例 |
+|---|---|---|
+| 7.1 头文件命名 | `header.h` | `Module_Function.h` |
+| 7.2 头文件保护宏 | `#pragma once` | `#ifndef _MODULE_FUNCTION_H #define _MODULE_FUNCTION_H ... #endif /* _MODULE_FUNCTION_H */` |
+| 7.4 .h 不放定义 | `int g_counter = 0;` | `extern int g_counter;` 在 .h / `int g_counter = 0;` 在 .c |
+
+### 宏 (14 章)
+
+| 规则 | 违规示例 | 正确示例 |
+|---|---|---|
+| 14.1 多语句宏 do-while-0 | `#define FOO(x) x++; y++` | `#define FOO(x) do { x++; y++; } while (0)` |
+| 14.2 表达式宏参数加括号 | `#define SQR(x) x * x` | `#define SQR(x) ((x) * (x))` |
+| 14.2 多求值参数提取到局部变量 | `#define INC(x) (++x) + (++x)` | `static inline int INC(int *p) { return ++(*p); }` |
+
+### 类型与字面量 (6 章)
+
+| 规则 | 违规示例 | 正确示例 |
+|---|---|---|
+| 6.1 不用 BOOL | `BOOL flag = TRUE;` | `bool flag = true;` |
+| 6.1 不用 char 算术 | `char c = 'A'; c++;` | `uint8_t c = (uint8_t)'A'; c++;` |
+| 6.2 unsigned 字面量 | `0xff & mask` | `0xFFU & mask` |
+| 6.3 显式转换并注释 | `int x = ptr;` | `int x = (int)(intptr_t)ptr; /* cast for hash key */` |
+
+### 注释 (11 章 / DOXYGEN)
+
+| 规则 | 违规示例 | 正确示例 |
+|---|---|---|
+| 11.1 普通注释用 // | `/* loop counter */ int i;` | `// loop counter; max value MAX_I int i;` |
+| 11.2 Doxygen 用 /** */ | `// @brief foo` | `/** @brief foo */` |
+| Doxygen @brief 中文 | `@brief Get the count` | `@brief 获取计数` |
+| Doxygen .h 不用 @ | `@brief foo / @details bar` | `@brief foo` (仅 .c 用 @details) |
+| Doxygen @param 方向 | `@param x input` | `@param[in] x 描述` |
+
+### 错误处理 (17 章)
+
+| 规则 | 违规示例 | 正确示例 |
+|---|---|---|
+| 17. 失败返回非零 | `return 0; /* on error */` | `return -EINVAL;` |
+| 17. malloc NULL 检查缺失 | `void *p = malloc(n); use(p);` | `void *p = malloc(n); if (p == NULL) { return -ENOMEM; } use(p);` |
+| 17. 错误码命名 | `int err = E_FAIL;` | `int rc = Eep__tenStatus;` |
+| 17. 默默吞错 | `if (err) { /* ignore */ }` | `if (err) { log("err=%d", err); rc = err; goto err_out; }` |
+
+### MISRA C 2012 叠加 (18 章)
+
+| 规则 | 违规示例 | 正确示例 |
+|---|---|---|
+| 18. 递归 | `void f(void) { f(); }` | (用循环改写) |
+| 18. 运行时 malloc | `void *p = malloc(n);` (运行时路径) | `static uint8_t buf[256];` |
+| 18. char 算术 | `char c; c = c + 1;` | `uint8_t c; c = (uint8_t)(c + 1U);` |
+| 18. 函数指针不兼容赋值 | `void (*fp)(int) = (void (*)(void))foo;` | `typedef void (*fp_t)(int); fp_t fp = foo;` |
+| 18. unsigned / signed 混用比较 | `if (us > -1)` | `if (us > 0U)` |
