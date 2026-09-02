@@ -1,0 +1,18 @@
+# integrations/ - 平台转换中间产物，由 multi-star-skill 的 platform-conversion.sh 重新生成
+integrations/
+
+# IDE 与系统文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak
+
+# 不包含 references/ 与 scripts/，它们是 skill 的核心资源
+
