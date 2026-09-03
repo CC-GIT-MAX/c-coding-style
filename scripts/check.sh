@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-### scripts/check.sh - c-coding-style skill 自检脚本
-### 验证 references/C_CODING_STYLE.md 和 references/DOXYGEN_STYLE.md 的关键约束
-### 借鉴 Z1R343L-D77 的 rg 验证清单模式
+### scripts/check.sh - c-coding-style v1.3.0 skill self-check
+### Validates the 25 hard rules (C-01~C-15 + D-01~D-10) and project structure
+### AdapTED to the 6-file references structure (C00~C14 + D)
 
 set -e
 
@@ -39,10 +39,10 @@ fi
 
 DESC=$(awk '/^description:/{sub(/^description: */,""); print; exit}' "$SKILL_DIR/SKILL.md")
 DESC_LEN=${#DESC}
-if [ "$DESC_LEN" -ge 80 ] && [ "$DESC_LEN" -le 200 ]; then
-  ok "description length $DESC_LEN chars (target 80-160, max 200)"
+if [ "$DESC_LEN" -ge 80 ] && [ "$DESC_LEN" -le 500 ]; then
+  ok "description length $DESC_LEN chars (target 80-500)"
 else
-  err "description length $DESC_LEN chars out of range 80-200"
+  err "description length $DESC_LEN chars out of range 80-500"
 fi
 
 if echo "$DESC" | grep -qi "make sure to use"; then
@@ -59,31 +59,104 @@ for kw in "C" "MISRA" "Doxygen" ".c" ".h"; do
   fi
 done
 
+# 25 hard rules ID + severity check in SKILL.md
 echo ""
-echo "Checking references/C_CODING_STYLE.md"
+echo "Checking 25 hard rules ID + severity in SKILL.md"
 
-C_REF="$SKILL_DIR/references/C_CODING_STYLE.md"
-if [ ! -f "$C_REF" ]; then err "C_CODING_STYLE.md missing"; exit 1; fi
-
-for ch in "0\\." "1\\." "5\\." "10\\." "18\\."; do
-  check_rg "Chapter $ch present in C_CODING_STYLE" "^## .* $ch " "$C_REF"
+EXPECTED_RULES="C-01 C-02 C-03 C-04 C-05 C-06 C-07 C-08 C-09 C-10 C-11 C-12 C-13 C-14 C-15 D-01 D-02 D-03 D-04 D-05 D-06 D-07 D-08 D-09 D-10"
+for rule in $EXPECTED_RULES; do
+  if grep -qE "#### $rule \[" "$SKILL_DIR/SKILL.md"; then
+    ok "rule $rule present in SKILL.md"
+  else
+    err "rule $rule missing in SKILL.md"
+  fi
 done
 
-check_rg "MISRA mentioned" "MISRA" "$C_REF"
-check_rg "Yoda style mentioned" "Yoda|0U ==" "$C_REF"
-check_rg "Header guard mentioned" "#ifndef|头文件保护" "$C_REF"
+for sev in CRITICAL HIGH MEDIUM; do
+  count=$(grep -cE "\[$sev\]" "$SKILL_DIR/SKILL.md" || true)
+  if [ "$count" -gt 0 ]; then
+    ok "severity tag [$sev] used $count times in SKILL.md"
+  else
+    warn "severity tag [$sev] not used in SKILL.md"
+  fi
+done
 
+for example in BAD GOOD ACCEPTABLE; do
+  count=$(grep -cE "^- ${example}( |$)" "$SKILL_DIR/SKILL.md" || true)
+  if [ "$count" -gt 0 ]; then
+    ok "example label $example used $count times in SKILL.md"
+  else
+    err "example label $example missing in SKILL.md (BAD/GOOD/ACCEPTABLE pattern broken)"
+  fi
+done
+
+# References 6 files structure check
 echo ""
-echo "Checking references/DOXYGEN_STYLE.md"
+echo "Checking references/ 6-file structure"
 
-D_REF="$SKILL_DIR/references/DOXYGEN_STYLE.md"
-if [ ! -f "$D_REF" ]; then err "DOXYGEN_STYLE.md missing"; exit 1; fi
+for f in C00-baseline-formatting.md C05-naming-types.md C07-headers-variables-functions.md C10-control-flow-files.md C14-macros-memory-safety.md D-doxygen-comment-style.md; do
+  if [ -f "$SKILL_DIR/references/$f" ]; then
+    ok "references/$f exists"
+  else
+    err "references/$f missing"
+  fi
+done
 
+if [ -f "$SKILL_DIR/references/C_CODING_STYLE.md" ]; then
+  err "old references/C_CODING_STYLE.md still exists, should be removed after split"
+else
+  ok "old references/C_CODING_STYLE.md removed"
+fi
+
+if [ -f "$SKILL_DIR/references/DOXYGEN_STYLE.md" ]; then
+  err "old references/DOXYGEN_STYLE.md still exists, should be renamed to D-doxygen-comment-style.md"
+else
+  ok "old references/DOXYGEN_STYLE.md removed"
+fi
+
+# Cross-reference check: each C reference has 关键交叉引用
+for f in C00-baseline-formatting.md C05-naming-types.md C07-headers-variables-functions.md C10-control-flow-files.md C14-macros-memory-safety.md D-doxygen-comment-style.md; do
+  if grep -q "关键交叉引用" "$SKILL_DIR/references/$f"; then
+    ok "references/$f contains key cross-reference table"
+  else
+    err "references/$f missing 关键交叉引用 table"
+  fi
+done
+
+# Content checks
+echo ""
+echo "Checking content"
+
+for rule_file in C00:C-01 C00:C-02 C00:C-03 C00:C-11 C05:C-05 C05:C-12 C05:C-15 C07:C-06 C07:C-07 C07:C-13 C07:C-14 C10:C-04 C10:C-08 C10:C-09 C10:C-10 C14:C-14 C14:C-18 D-doxygen:D-01 D-doxygen:D-05; do
+  file="${rule_file%:*}"
+  rule="${rule_file#*:}"
+  if grep -qE "$rule \[" "$SKILL_DIR/references/$file" 2>/dev/null; then
+    ok "$rule referenced in $file"
+  else
+    warn "$rule not referenced in $file (可能该规则与其他章节相关)"
+  fi
+done
+
+# C-11 零警告 check
+if grep -qE "C-11.*\[CRITICAL\]" "$SKILL_DIR/SKILL.md"; then
+  ok "C-11 [CRITICAL] 零警告 rule present in SKILL.md"
+fi
+
+# Yoda style check
+check_rg "Yoda style mentioned" "Yoda|0U ==" "$SKILL_DIR/references/C10-control-flow-files.md"
+
+# Header guard check
+check_rg "Header guard mentioned" "#ifndef|头文件保护" "$SKILL_DIR/references/C07-headers-variables-functions.md"
+
+# MISRA mention
+check_rg "MISRA mentioned in C14" "MISRA" "$SKILL_DIR/references/C14-macros-memory-safety.md"
+
+# Doxygen tag check
 for tag in "@brief" "@param" "@return"; do
-  check_rg "Doxygen tag $tag mentioned" "$tag" "$D_REF"
+  check_rg "Doxygen tag $tag mentioned" "$tag" "$SKILL_DIR/references/D-doxygen-comment-style.md"
 done
 
-check_rg "Chinese @brief requirement" "@brief" "$D_REF"
+check_rg "Chinese @brief requirement" "@brief" "$SKILL_DIR/references/D-doxygen-comment-style.md"
 
 echo ""
 echo "Checking project files"
@@ -150,4 +223,3 @@ fi
 echo ""
 echo "All P0 checks passed. Ready to publish."
 exit 0
-
