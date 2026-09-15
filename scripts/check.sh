@@ -191,11 +191,7 @@ else
   err "README.EN.md missing (P0 violation)"
 fi
 
-if [ -f "$SKILL_DIR/CHANGELOG.md" ]; then
-  ok "CHANGELOG.md exists"
-else
-  warn "CHANGELOG.md missing (P1 violation)"
-fi
+# CHANGELOG.md intentionally omitted; release body on GitHub carries version history.
 
 if [ -f "$SKILL_DIR/CONTRIBUTING.md" ]; then
   ok "CONTRIBUTING.md exists"

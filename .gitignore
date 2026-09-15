@@ -26,3 +26,6 @@ Thumbs.db
 # 临时打包产物（release asset 由 gh release upload 推送，不入库）
 /c-coding-style-*.zip
 /c-coding-style-*.tar.gz
+
+# CHANGELOG.md: release body 已承担版本演进记录，对使用者冗余
+/CHANGELOG.md

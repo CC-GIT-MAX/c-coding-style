@@ -29,9 +29,13 @@ Differentiator: general baseline + MISRA C 2012 overlays + Doxygen conventions, 
    Codex:
    mkdir -p ~/.codex/skills && cp -r . ~/.codex/skills/c-coding-style/
 
-   Windows PowerShell:
-   New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills\c-coding-style"
-   Copy-Item -Recurse -Force -Path .\* -Destination "$env:USERPROFILE\.codex\skills\c-coding-style\"
+   Windows PowerShell (robocopy skips .git automatically):
+
+   Claude Code:
+   robocopy . "$env:USERPROFILE\.claude\skills\c-coding-style" /E /XD .git /NFL /NDL /NJH /NJS | Out-Null
+
+   Codex:
+   robocopy . "$env:USERPROFILE\.codex\skills\c-coding-style" /E /XD .git /NFL /NDL /NJH /NJS | Out-Null
 
 3. Verify
    bash scripts/check.sh
@@ -66,7 +70,6 @@ See per-agent sections below for full install notes.
 - agents/openai.yaml - Codex platform load entry
 - assets/social-preview.png - GitHub repo card preview
 - CONTRIBUTING.md - rule change and PR flow
-- CHANGELOG.md - version history
 - LICENSE - MIT license
 ## Bundled tools
 - .clang-format - layout self-check (run clang-format after agent generates code)

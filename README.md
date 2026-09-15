@@ -29,9 +29,13 @@ C 编码风格与 Doxygen 注释规约，合并通用基线 + MISRA C 2012 叠�
    Codex:
    mkdir -p ~/.codex/skills && cp -r . ~/.codex/skills/c-coding-style/
 
-   Windows PowerShell:
-   New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills\c-coding-style"
-   Copy-Item -Recurse -Force -Path .\* -Destination "$env:USERPROFILE\.codex\skills\c-coding-style\"
+   Windows PowerShell（用 robocopy 自动排除 .git）:
+
+   Claude Code:
+   robocopy . "$env:USERPROFILE\.claude\skills\c-coding-style" /E /XD .git /NFL /NDL /NJH /NJS | Out-Null
+
+   Codex:
+   robocopy . "$env:USERPROFILE\.codex\skills\c-coding-style" /E /XD .git /NFL /NDL /NJH /NJS | Out-Null
 
 3. 验证
    bash scripts/check.sh
@@ -62,12 +66,11 @@ C 编码风格与 Doxygen 注释规约，合并通用基线 + MISRA C 2012 叠�
   - misra-suppressions.txt — MISRA C 2012 抑制清单
 - scripts/check.sh — 25 条硬规则 + 6 文件结构 + 3 severity + 3 example 标签自检
 - .clang-format — 排版自检配置
-- plugin.json — Codex 插件元数据
-- agents/openai.yaml — Codex 平台加载入口
-- assets/social-preview.png — GitHub 仓库卡片预览
-- CONTRIBUTING.md — 规则变更与 PR 流程
-- CHANGELOG.md — 版本演进
-- LICENSE — MIT 许可证
+- plugin.json - Codex 插件元数据
+- agents/openai.yaml - Codex 平台加载入口
+- assets/social-preview.png - GitHub 仓库卡片预览
+- CONTRIBUTING.md - 规则变更与 PR 流程
+- LICENSE - MIT 许可证
 ## 配套工具
 - .clang-format — 排版自检配置（agent 生成代码后跑 clang-format）
 - scripts/check.sh — 规约自检脚本（CI 或提交前跑）
