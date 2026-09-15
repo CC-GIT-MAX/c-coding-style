@@ -16,3 +16,9 @@ Thumbs.db
 
 # 不包含 references/ 与 scripts/，它们是 skill 的核心资源
 
+
+# 维护者本地文件，不提交到远程仓库
+# - AGENTS.md: 本机 Codex 进入仓库根自动加载用，其它用户不需要
+# - .dev/: 维护者辅助脚本与本地工具
+/AGENTS.md
+/.dev/
