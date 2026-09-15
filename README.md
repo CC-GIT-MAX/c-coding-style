@@ -17,8 +17,6 @@ C 编码风格与 Doxygen 注释规约，合并通用基线 + MISRA C 2012 叠�
 - 差异化: 通用基线 + MISRA C 2012 叠加项 + Doxygen 规约，三合一目前无人占位
 ## 快速开始
 
-其它用户从 GitHub clone 后只需两步：
-
 1. 获取仓库
    git clone https://github.com/CC-GIT-MAX/c-coding-style.git
    cd c-coding-style

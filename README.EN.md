@@ -17,8 +17,6 @@ An agent skill (Claude Code / Codex / Hermes / Cursor, etc.) for C coding standa
 Differentiator: general baseline + MISRA C 2012 overlays + Doxygen conventions, three-in-one with no incumbent.
 ## Quick start
 
-For anyone cloning from GitHub, only two steps:
-
 1. Get the repo
    git clone https://github.com/CC-GIT-MAX/c-coding-style.git
    cd c-coding-style
