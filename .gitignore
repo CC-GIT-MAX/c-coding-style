@@ -22,3 +22,7 @@ Thumbs.db
 # - .dev/: 维护者辅助脚本与本地工具
 /AGENTS.md
 /.dev/
+
+# 临时打包产物（release asset 由 gh release upload 推送，不入库）
+/c-coding-style-*.zip
+/c-coding-style-*.tar.gz
