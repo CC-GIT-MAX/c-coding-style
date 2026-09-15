@@ -1,8 +1,8 @@
 # c-coding-style
 C 编码风格与 Doxygen 注释规约，合并通用基线 + MISRA C 2012 叠加项，适用于嵌入式 / 安全 / 汽车行业的 C 团队。
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Stars](https://img.shields.io/github/stars/USER/c-coding-style)
-![Last commit](https://img.shields.io/github/last-commit/USER/c-coding-style)
+![Stars](https://img.shields.io/github/stars/CC-GIT-MAX/c-coding-style)
+![Last commit](https://img.shields.io/github/last-commit/CC-GIT-MAX/c-coding-style)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-blue)
 ![Codex](https://img.shields.io/badge/Codex-compatible-green)
 ![Hermes](https://img.shields.io/badge/Hermes-compatible-lightgrey)
@@ -16,65 +16,78 @@ C 编码风格与 Doxygen 注释规约，合并通用基线 + MISRA C 2012 叠�
 - 不适用: C++ / Objective-C / Rust / Go 等其它语言（除非用户明确要求套用 C 风格）
 - 差异化: 通用基线 + MISRA C 2012 叠加项 + Doxygen 规约，三合一目前无人占位
 ## 快速开始
-Claude Code:
-cp -r ~/.claude/skills/c-coding-style ~/.claude/skills/c-coding-style
-Codex:
-cp -r ~/.codex/skills/c-coding-style ~/.codex/skills/c-coding-style
-Hermes (用 multi-star-skill 的 sync-hermes.py 同步):
-python ~/.codex/skills/multi-star-skill/assets/sync-hermes.py --verbose
-Cursor / Kilo Code / Windsurf / OpenCode / Augment / Antigravity / Aider:
-bash ~/.codex/skills/multi-star-skill/assets/platform-conversion.sh --skill . --tool all --out integrations/
-bash ~/.codex/skills/multi-star-skill/assets/platform-install.sh --tool cursor --target /path/to/your/project
-重复 --tool 参数直至所有平台都安装完
-验证 (所有平台):
-bash scripts/check.sh
+
+其它用户从 GitHub clone 后只需两步：
+
+1. 获取仓库
+   git clone https://github.com/CC-GIT-MAX/c-coding-style.git
+   cd c-coding-style
+
+2. 安装到目标 agent 的 skills 目录（按平台选一条）
+
+   Claude Code:
+   mkdir -p ~/.claude/skills && cp -r . ~/.claude/skills/c-coding-style/
+
+   Codex:
+   mkdir -p ~/.codex/skills && cp -r . ~/.codex/skills/c-coding-style/
+
+   Windows PowerShell:
+   New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.codex\skills\c-coding-style"
+   Copy-Item -Recurse -Force -Path .\* -Destination "$env:USERPROFILE\.codex\skills\c-coding-style\"
+
+3. 验证
+   bash scripts/check.sh
+
+详细安装与多平台说明见 README 各 agent 段。
 ## 主要功能
-- 命名约定 (PascalCase 类型 + 双下划线后缀, UPPER_SNAKE_CASE 宏, snake_case 变量 + 模块前缀)
-- 排版规约 (4 空格缩进, K&R 紧凑花括号, Yoda 风格 if)
-- 类型与字面量 (定宽整数, U/L/LL/f 后缀)
-- 头文件保护宏 (传统 ifndef 形式, 禁止 pragma once)
-- 控制流 (Yoda, switch default, goto 单一出口)
-- 宏 (多语句宏用 do-while-0)
-- 内存 (malloc NULL 检查, free 后置 NULL, 静态优先)
-- 并发 (ISR 极短, 共享变量加 volatile / 原子类型)
-- 错误处理 (goto err_out 模式, 错误码命名)
-- MISRA C 2012 叠加项
-- Doxygen 注释 (中文 brief, .h 禁用 details, param 方向标注)
-## 对照其它方案
-| 维度 | 本 skill | jdubray/puffin | xwos/XWOS | williamzujkowski/standards |
-|---|---|---|---|---|
-| 覆盖范围 | 18 章全栈 | 仅命名 | 命名+类型+错误+注释+格式+段属性 | 多语言规约集 |
-| 配套工具 | .clang-format + scripts/check.sh | 无 | .clang-format | 无 |
-| 多 agent 兼容 | 10 平台 | 仅 Claude | 仅项目内 | 仅 Claude |
-| 注释规约 | 独立 references | 无 | 内嵌章节 | 无 |
-| MISRA C 2012 | 第 18 章叠加项 | 无 | 强制 + 抑制清单 | 无 |
-| 适用范围 | 通用基线 + MISRA 叠加 | 通用 C | 嵌入式 RTOS 专用 | 多语言 |
+- 25 条硬规则（每条带 ID + 严重程度 + BAD/GOOD/ACCEPTABLE 三例）
+- 命名约定（PascalCase 类型 + 双下划线后缀，UPPER_SNAKE_CASE 宏，snake_case 变量 + 模块前缀）
+- 排版规约（4 空格缩进，K&R 紧凑花括号，Yoda 风格 if）
+- 类型与字面量（定宽整数，U/L/LL/f 后缀）
+- 头文件保护宏（传统 ifndef 形式，禁止 #pragma once）
+- 控制流（Yoda，switch default，goto 单一出口）
+- 宏（多语句宏用 do-while-0）
+- 内存（malloc NULL 检查，free 后置 NULL，静态优先）
+- 并发（ISR 极短，共享变量加 volatile / 原子类型）
+- 错误处理（goto err_out 模式，错误码命名）
+- MISRA C 2012 叠加项（references/C14 §18 + misra-suppressions.txt）
+- Doxygen 注释（中文 brief，.h 禁用 details，@param 方向标注）
 ## 文档结构
-- SKILL.md - 触发条件 + 操作流程 (agent 加载入口)
-- references/C_CODING_STYLE.md - 18 章主规约
-- references/DOXYGEN_STYLE.md - Doxygen 注释规约
-- .clang-format - 排版自检配置
-- scripts/check.sh - 自检脚本
-- plugin.json - Codex 插件元数据
-- LICENSE - MIT 许可证
+- SKILL.md — agent 加载入口（frontmatter description + 25 条硬规则清单 + 文件布局 + 软化条件）
+- references/ — 详细规约，按主题分文件
+  - C00-baseline-formatting.md — §0–§4 基线与排版
+  - C05-naming-types.md — §5–§6 命名与类型
+  - C07-headers-variables-functions.md — §7–§9 头文件 / 变量 / 函数
+  - C10-control-flow-files.md — §10–§13 控制流 / 文件位置 / #include 顺序
+  - C14-macros-memory-safety.md — §14–§19 宏 / 内存 / 并发 / 错误 / MISRA
+  - D-doxygen-comment-style.md — Doxygen 全 6 章注释规约
+  - misra-suppressions.txt — MISRA C 2012 抑制清单
+- scripts/check.sh — 25 条硬规则 + 6 文件结构 + 3 severity + 3 example 标签自检
+- .clang-format — 排版自检配置
+- plugin.json — Codex 插件元数据
+- agents/openai.yaml — Codex 平台加载入口
+- assets/social-preview.png — GitHub 仓库卡片预览
+- CONTRIBUTING.md — 规则变更与 PR 流程
+- CHANGELOG.md — 版本演进
+- LICENSE — MIT 许可证
 ## 配套工具
-- .clang-format - 排版自检配置
-- scripts/check.sh - 规约自检脚本
-- references/ - 渐进加载详细规约
+- .clang-format — 排版自检配置（agent 生成代码后跑 clang-format）
+- scripts/check.sh — 规约自检脚本（CI 或提交前跑）
+- references/ — 渐进披露详细规约（按需加载，不一次塞满上下文）
 ## 支持的 agent
-- Claude Code (~/.claude/skills/c-coding-style/)
-- Codex CLI (~/.codex/skills/c-coding-style/)
-- Hermes Agent (经 multi-star-skill sync-hermes.py 同步)
-- Cursor (.cursor/rules/c-coding-style.mdc)
-- Kilo Code (.kilocode/rules/c-coding-style.md)
-- Windsurf (.windsurf/skills/c-coding-style/SKILL.md)
-- OpenCode (.opencode/skills/c-coding-style/SKILL.md)
-- Augment (.augment/skills/c-coding-style/SKILL.md)
-- Antigravity (~/.gemini/antigravity/skills/c-coding-style/)
-- Aider (CONVENTIONS.md 单文件)
-多平台转换: 用 multi-star-skill 的 platform-conversion.sh + platform-install.sh。
+- Claude Code — `~/.claude/skills/c-coding-style/`（克隆后 cp 整个仓库到该路径）
+- Codex CLI — `~/.codex/skills/c-coding-style/`（自动加载 `agents/openai.yaml` + `plugin.json`）
+- Hermes — `~/.hermes/skills/c-coding-style/`（手动 cp 即可）
+- Cursor — `.cursor/rules/c-coding-style.mdc`（单文件，把 SKILL.md 内容塞进去）
+- Kilo Code — `.kilocode/rules/c-coding-style.md`（同上）
+- Windsurf — `.windsurf/skills/c-coding-style/SKILL.md`（同上）
+- OpenCode — `.opencode/skills/c-coding-style/SKILL.md`（同上）
+- Augment — `.augment/skills/c-coding-style/SKILL.md`（同上）
+- Antigravity — `~/.gemini/antigravity/skills/c-coding-style/`（cp 整个仓库）
+- Aider — `CONVENTIONS.md`（项目根单文件，把 SKILL.md 内容塞进去）
+
+各平台手动安装命令在快速开始段已列。无需任何外部 multi-star-skill 工具。
 ## 贡献
-参见 CONTRIBUTING.md。规则变更请同步更新 references/C_CODING_STYLE.md 和 references/DOXYGEN_STYLE.md 互相引用。
+参见 CONTRIBUTING.md。规则变更需同步更新 references/ 下相关 C 文件和 D-doxygen-comment-style.md 的交叉引用。
 ## 许可证
 MIT
-

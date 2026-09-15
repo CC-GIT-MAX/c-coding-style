@@ -1,14 +1,14 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "c-coding-style",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "C 编码风格与 Doxygen 注释规约，合并通用基线 + MISRA C 2012 叠加项，适用于嵌入式 / 安全 / 汽车行业的 C 团队。",
   "author": {
     "name": "c-coding-style contributors",
-    "url": "https://github.com/USER/c-coding-style"
+    "url": "https://github.com/CC-GIT-MAX/c-coding-style"
   },
-  "homepage": "https://github.com/USER/c-coding-style",
-  "repository": "https://github.com/USER/c-coding-style",
+  "homepage": "https://github.com/CC-GIT-MAX/c-coding-style",
+  "repository": "https://github.com/CC-GIT-MAX/c-coding-style",
   "license": "MIT",
   "keywords": [
     "c-language",
@@ -20,4 +20,3 @@
     "code-style"
   ]
 }
-

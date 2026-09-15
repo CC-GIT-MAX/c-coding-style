@@ -9,7 +9,7 @@ description: Apply when writing, editing, reviewing, or generating C source or h
 
 When writing, modifying, or reviewing C code (`.c` / `.h`), apply two project rule sets together:
 
-- Style rules → `references/C00` ~ `references/C14` (按章节索引)
+- Style rules → `references/C00-baseline-formatting.md` / `C05-naming-types.md` / `C07-headers-variables-functions.md` / `C10-control-flow-files.md` / `C14-macros-memory-safety.md` (按主题分组，章节号 §0–§19)
 - Comment rules → `references/D-doxygen-comment-style.md`
 
 This SKILL.md is a thin entry point that summarizes the 25 hard rules and points you to the full documents in `references/`. For full context, read the relevant reference file.
@@ -27,7 +27,7 @@ Violations of these are bugs, not style preferences. Each rule carries a stable 
 
 ### ID & severity
 
-- IDs: `C-NN` from C_CODING_STYLE references, `D-NN` from Doxygen reference.
+- IDs: `C-NN` from `references/C*.md`, `D-NN` from `references/D-doxygen-comment-style.md`.
 - CRITICAL — violation breaks compilation, ABI, correctness, or safety; reject on review.
 - HIGH — violation floods warnings, breaks portability, or contradicts a hard contract.
 - MEDIUM — violation hurts consistency / readability but does not break the build.
@@ -472,7 +472,7 @@ Each section separated by 1 blank line and a `/*========== Section ==========*/`
 - Legacy code using Hungarian `s_au8Foo` or `accdata`-style names: keep the surrounding style, do not refactor unless explicitly asked.
 - Vendor SDK / third-party: out of scope, no style edits.
 - MISRA C 2012 overlay: when project declares Autosar / safety / medical / automotive context, add C-11 零警告 + references/C14 §18 rules on top of the defaults (no recursion, no runtime `malloc`, no plain `char` arithmetic, no function-pointer type punning, etc.).
-- Soft suggestions (references/C09 §9.4, references/C00 §2 行长度): 函数体 ≤ 50 行 / 圈复杂度 ≤ 10 / 嵌套 ≤ 4 层 / 行宽 120-180 — 软建议, 不强制。
+- Soft suggestions (`references/C07-headers-variables-functions.md` §9.4, `references/C00-baseline-formatting.md` §2): 函数体 ≤ 50 行 / 圈复杂度 ≤ 10 / 嵌套 ≤ 4 层 / 行宽 120-180 — 软建议, 不强制。
 
 ## Build verification (before reporting done)
 
@@ -485,11 +485,10 @@ Each section separated by 1 blank line and a `/*========== Section ==========*/`
 
 When two rules conflict, prefer in this order:
 
-1. The full reference file (references/C00 ~ references/C14 / references/D) — this SKILL.md is a summary.
+1. The full reference file (`references/C00-baseline-formatting.md` / `C05-naming-types.md` / `C07-headers-variables-functions.md` / `C10-control-flow-files.md` / `C14-macros-memory-safety.md` / `D-doxygen-comment-style.md`) — this SKILL.md is a summary.
 2. `references/C00` §0 优先级：可读性 > 一致性 > 个人偏好。
 3. Ask the user before introducing a new convention.
 
 ## Scope declaration
 
 This skill covers only C language. C++ / embedded C++ use a different rule set and are out of scope here.
-
